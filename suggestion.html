@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>اقتراحات اللاعبين - Down Town</title>
+  <style>
+    body {
+      direction: rtl;
+      font-family: 'Tajawal', sans-serif;
+      background-color: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+    form {
+      background: #1c1c1c;
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 10px #000;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #e0631a;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e77d03;
+    }
+  </style>
+</head>
+<body>
+  <h2>📩 قدم اقتراحك لسيرفر Down Town</h2>
+  <form id="suggestionForm">
+    <input type="text" id="name" placeholder="اسمك (اختياري)">
+    <input type="text" id="steamid" placeholder="Steam ID أو Discord ID">
+    <textarea id="suggestion" rows="6" placeholder="اكتب اقتراحك هنا..." required></textarea>
+    <button type="submit">إرسال الاقتراح</button>
+  </form>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1424516674177990748/ZNOSqhYxARSyEjq6qebFzUtGealgexv3VGu5sLiOPqcYpClqBTISzYD_NkVshosptt0n";
+
+    document.getElementById("suggestionForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value || "بدون اسم";
+      const steamid = document.getElementById("steamid").value || "غير محدد";
+      const suggestion = document.getElementById("suggestion").value;
+
+      const payload = {
+        embeds: [{
+          title: "📬 اقتراح جديد من اللاعبين",
+          color: 3447003,
+          fields: [
+            { name: "👤 الاسم", value: name, inline: false },
+            {
+              name: "🆔 Steam/Discord ID",
+              value: steamid.match(/^\d{17,20}$/) ? `<@${steamid}>` : steamid,
+              inline: false
+            },
+            { name: "💡 الاقتراح", value: suggestion, inline: false }
+          ],
+          footer: {
+            text: "Down Town - Suggestion System"
+          },
+          timestamp: new Date()
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("✅ تم إرسال اقتراحك بنجاح!");
+          document.getElementById("suggestionForm").reset();
+        } else {
+          alert("❌ حدث خطأ أثناء إرسال الاقتراح.");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("❌ حدث خطأ تقني.");
+      });
+    });
+  </script>
+</body>
+</html>
